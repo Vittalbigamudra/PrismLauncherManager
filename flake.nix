@@ -1,40 +1,17 @@
 {
-  description = "Flake example for prismlauncher";
+  description = "A universal, declarative Prism Launcher module suite for NixOS and Home Manager";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    ninjabrain-bot = {
-      url = "https://tangled.org/althaea.zone/ninjabrain-bot-nix/archive/trunk";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
-    
-    # Expose the module so it can be cleanly referenced elsewhere if needed
-    nixosModules.prismLauncher = ./prism-launcher-module.nix;
+  outputs = { self, nixpkgs, ... }: {
+    # Clean public access layers exposed for consumers
+    nixosModules.prismLauncher = ./modules/nixos.nix;
+    homeManagerModules.prismLauncher = ./modules/home-manager.nix;
 
-    nixosConfigurations.your-hostname = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; }; 
-      
-      modules = [
-        ./configuration.nix            
-        self.nixosModules.prismLauncher # Make sure to add this.
-        ./minecraft.nix              
-
-        home-manager.nixosModules.home-manager {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = { inherit inputs; };
-        }
-      ];
-    };
+    # Default fallbacks to prevent errors if outputs are queried directly
+    nixosModules.default = self.nixosModules.prismLauncher;
+    homeManagerModules.default = self.homeManagerModules.prismLauncher;
   };
 }
