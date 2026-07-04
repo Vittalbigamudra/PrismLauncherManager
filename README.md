@@ -9,7 +9,7 @@ If something breaks, then let me know. I will do my best to fix it.
 ```nix
 
 {
-  description = "Example User's System Configuration";
+  description = "Example System Configuration";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -18,7 +18,7 @@ If something breaks, then let me know. I will do my best to fix it.
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Pulling your repository down cleanly via url
+    # Repository
     prism-manager = {
       url = "github:vaylinaut/PrismLauncherManager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -31,7 +31,7 @@ If something breaks, then let me know. I will do my best to fix it.
       modules = [
         ./configuration.nix
 
-        # EITHER option A: They load it directly inside NixOS system modules
+        # EITHER option A: Load it directly inside NixOS system modules
         prism-manager.nixosModules.prismLauncher
 
         home-manager.nixosModules.home-manager {
@@ -39,15 +39,9 @@ If something breaks, then let me know. I will do my best to fix it.
           home-manager.useUserPackages = true;
           home-manager.users.vittalb = {
             imports = [
-              # OR option B: They choose to import it into their Home Manager profile instead!
+              # OR option B: Import it into the Home Manager profile instead
               prism-manager.homeManagerModules.prismLauncher
             ];
-
-            # Installs and fully configs things on execution
-            programs.prismLauncher = {
-              enable = true;
-              settings.General.ApplicationTheme = "dark";
-            };
           };
         }
       ];
