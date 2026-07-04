@@ -7,8 +7,8 @@
 
   outputs = { self, nixpkgs, ... }: {
     # home manager
-    nixosModules.prismLauncher = ./modules/nixos.nix;
-    homeManagerModules.prismLauncher = ./modules/home-manager.nix;
+    nixosModules.prismLauncher = ./nixos.nix;
+    homeManagerModules.prismLauncher = ./home-manager.nix;
 
     # nixos
     nixosModules.default = self.nixosModules.prismLauncher;
