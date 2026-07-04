@@ -19,6 +19,12 @@ in
       default = false;
     };
 
+    package = mkOption {
+      type = types.package;
+      default = pkgs.prismlauncher;
+      description = "The Prism Launcher package to install.";
+    };
+
     settings = mkOption {
       type = types.submodule {
         freeformType = with types; attrsOf (attrsOf anything);
@@ -28,13 +34,14 @@ in
   };
 
   config = mkIf cfg.enable {
+    environment.systemPackages = [ cfg.package ];
+
     home.activation.mapPrismSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-              ${pkgs.python3}/bin/python3 -c '
+      ${pkgs.python3}/bin/python3 -c '
       import os
       import json
       import configparser
 
-      # Updated path to point to ~/.local/share
       config_path = os.path.expanduser("~/.local/share/PrismLauncher/prismlauncher.cfg")
       os.makedirs(os.path.dirname(config_path), exist_ok=True)
 
@@ -44,7 +51,6 @@ in
       if os.path.exists(config_path):
           config.read(config_path)
 
-      # Read the JSON straight from the immutable Nix store file
       with open("${prismJsonConfig}", "r") as f:
           updates = json.load(f)
 
