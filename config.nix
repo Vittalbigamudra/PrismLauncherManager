@@ -31,4 +31,3 @@ programs.prismLauncher = {
       };
     };
   };
-}
